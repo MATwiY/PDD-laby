@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PDD - Lab 1</title>
+    <meta name="viewport" content="width = device-width, initial-scale = 1">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="theme.green.css">
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <!-- load jQuery and tablesorter scripts
+    <script type="text/javascript" src="/js/jquery-latest.js"></script>-->
+    <script type="text/javascript" src="js/jquery.tablesorter.js"></script>
+
+    <!-- tablesorter widgets (optional) -->
+    <script type="text/javascript" src="js/jquery.tablesorter.widgets.js"></script>
+    <script type="text/javascript" src="js/validator.js"></script>
+    <script>
+        $(function() {
+            $("#myTable").tablesorter();
+        });
+
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
+
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="container">
+
+         <div class="navbar fixed-top">
+                <p>
+                    <a class="main" href="index.html">Stron Główna</a>
+                    <a class="info" href="http://lcieszynski.zut.edu.pl/fileadmin/DPD/instrukcja_2019.pdf">Instrukcja</a>
+                </p>
+                 <p>
+                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#MyModal" onclick="koszyk();cenaZakupow()">Koszyk</button>
+                 </p>
+
+         </div>
+        <!-- Modal - koszyk -->
+        <div id="MyModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Koszyk</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table id="koszyk-tab" class="tablesorter tablesorter-green">
+                            <thead class="border ">
+                                <tr>
+                                    <th>Nazwa</th>
+                                    <th>Cena Brutto</th>
+                                    <th>szt.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+
+                        <br/>
+                        <div>
+                            <label>Dostawa: </label>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input dostawa" id="dostawca1" onclick="cenaZakupow()" name="dostawa" value="9.99" checked="checked">
+                                <label class="form-check-label " for="dostawca1">Poczta (9.99zł)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input dostawa" id="dostawca2" onclick="cenaZakupow()" name="dostawa" value="14.99">
+                                <label class="form-check-label" for="dostawca2">Kurier (14.99zł)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input dostawa" id="dostawca3" onclick="cenaZakupow()" name="dostawa" value="0.00">
+                                <label class="form-check-label" for="dostawca3">Odbiór osobisty (0.00zł)</label>
+                            </div>
+                        </div>
+                        <div class="float-right">
+                            <span class="badge badge-primary " id="cenaZakupu" >Cena :</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalSuccess" data-dismiss="modal" onclick="clearLocalStorage()">Kup</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Wyjdź</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalSuccess" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-sm">
+                    <div class="alert alert-success" role="alert">
+                        <b>Zakup produktów udany</b>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+
+        <div class="row no-gutters">
+            <div class="col-md-2">
+
+            </div>
+
+
+            <div class="col-md-8 ">
+
+                <form id="myForm">
+                    <!--Nazwa towaru -->
+                    <div class="form-group row">
+                        <label for="inputTowar" class="col-sm-2 col-form-label">Nazwa Towaru</label>
+                        <input type="text" class="form-control col-sm-6" id="inputTowar" onblur="sprwadzTowarName()">
+                        <div id="towar_name_blad"></div>
+                    </div>
+                    <!--Kod towaru -->
+                    <div class="form-group row">
+                        <label for="inputKodTowaru" class="col-sm-2 col-form-label">Kod Towaru</label>
+                        <input type="text" class="form-control col-sm-6" id="inputKodTowaru" onblur="sprawdzTowarKod()">
+                        <div id="towar_kod_blad"></div>
+                    </div>
+                    <!--Cena netto -->
+                    <div class="form-group row">
+                        <label for="inputCenaNetto" class="col-sm-2 col-form-label">Cena Netto</label>
+                        <input type="text" class="form-control col-sm-6" id="inputCenaNetto" onblur="sprawdzCenaNetto();sprawdzCenaBrutto()">
+                        <div id="cena_netto_blad"></div>
+                    </div>
+                    <!--Stawka VAT towaru -->
+                    <div class="form-group row">
+                        <label for="inputVat" class="col-sm-2 col-form-label">stawka VAT</label>
+                        <input type="text" class="form-control col-sm-6" id="inputVat" onblur="sprawdzCenaBrutto();sprawdzVat()">
+                        <div id="vat_blad"></div>
+                    </div>
+                    <!--Cena brutto -->
+                    <div class="form-group row">
+                        <label for="inputCenaBrutto" class="col-sm-2 col-form-label">Cena Brutto</label>
+                        <input type="number" class="form-control col-sm-6" id="inputCenaBrutto" onblur="sprawdzCenaBrutto()" readonly>
+                    </div>
+                    <!--Kategorie towaru - select -->
+                    <div class="form-group row">
+                        <label for="inputKategorie" class="col-sm-2 col-form-label">Kategorie towaru</label>
+                        <select class="form-control col-sm-6" id="inputKategorie" oninput="sprawdzKategoriaTowaru()">
+
+                            <option value="">Wybierz opcje</option>
+                            <option value="Opcja 1">Opcja 1</option>
+                            <option value="Opcja 2">Opcja 2</option>
+                            <option value="Opcja 3">Opcja 3</option>
+
+                        </select>
+                        <div id="blad_kategoria"></div>
+                    </div>
+
+                    <!--Opcje towaru - class=form-check-inline -->
+                    <div class="form-group row" id="checkBoxes" >
+                        <label for="inputOpcje" class="col-sm-2 col-form-label">Opcje towaru</label>
+                        <div class="form-check form-check-inline" id="inputOpcje">
+                            <input class="form-check-input checkboxOpcja" type="checkbox" id="inlineBox1" value="option 1" onclick="sprawdzOpcjeTowaru()">
+                            <label class="form-check-label" for="inlineBox1">Option 1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input checkboxOpcja" type="checkbox" id="inlineBox2" value="option 2" onclick="sprawdzOpcjeTowaru()">
+                            <label class="form-check-label" for="inlineBox2">Option 2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input checkboxOpcja" type="checkbox" id="inlineBox3" value="option 3" onclick="sprawdzOpcjeTowaru()">
+                            <label class="form-check-label" for="inlineBox3">Option 3</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input checkboxOpcja" type="checkbox" id="inlineBox4" value="option 4" onclick="sprawdzOpcjeTowaru()">
+                            <label class="form-check-label" for="inlineBox4">Option 4</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input checkboxOpcja" type="checkbox" id="inlineBox5" value="option 5" onclick="sprawdzOpcjeTowaru()">
+                            <label class="form-check-label" for="inlineBox5">Option 5</label>
+                        </div>
+
+                    </div>
+                    <div id="blad_opcji"></div>
+                        <!--Ocena towaru -->
+                    <div class="form-group row ">
+                        <label class="col-sm-2 col-form-label" >Ocena towaru</label>
+
+                            <div class="col-sm-6" >
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input radioOcena" type="radio" name="radioOcena" id="ocenaCheck" value="option 1" checked="checked" >
+                                    <label class="form-check-label" for="ocenaCheck">1</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input  radioOcena" type="radio" name="radioOcena" id="ocenaCheck2" value="option 2">
+                                    <label class="form-check-label" for="ocenaCheck2">2</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input radioOcena" type="radio" name="radioOcena" id="ocenaCheck3" value="option 3">
+                                    <label class="form-check-label" for="ocenaCheck3">3</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input radioOcena" type="radio" name="radioOcena" id="ocenaCheck4" value="option 4">
+                                    <label class="form-check-label" for="ocenaCheck4">4</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input radioOcena" type="radio" name="radioOcena" id="ocenaCheck5" value="option 5">
+                                    <label class="form-check-label" for="ocenaCheck5">5</label>
+                                </div>
+
+                            </div>
+                    </div>
+
+                        <!--Zdjęcie produktu -->
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Zdjęcie produktu</label>
+                        <button type="button" class="btn btn-secondary">Dodaj zdjęcie</button>
+                        <p>zdjecie.jpg</p>
+                    </div>
+                        <!--przycisk dodaj -->
+                    <input type="button" class="form-control col-sm-4 btn btn-outline-primary" id="Validate" value="Dodaj" onclick="przyciskFormularz()">
+                    <input type="button" class="form-control col-sm-4 btn btn-outline-secondary" id="Edit" value="Edytuj" style="visibility: hidden;" onclick="addEditRow()">
+                    <div id="towarInTable" style="color: red"></div>
+                </form>
+
+                <br/>
+                <div>
+                    <input type="button" class="btn btn-outline-dark" value="Sortuj" id="sortTable" onclick="sortowanie()"/>
+                    <label for="sortChoice">Sortuj według:</label>
+                    <select id="sortChoice">
+                        <option value="0">cena od najniższej</option>
+                        <option value="1">cena od najwyższej</option>
+                        <option value="2">ocena od najniższej</option>
+                        <option value="3">ocena od najwyższej</option>
+                        <option value="4">nazwa od A</option>
+                        <option value="5">nazwa od Z</option>
+                    </select>
+                </div>
+
+
+
+                <table id="myTable" class="tablesorter tablesorter-green">
+                    <thead>
+                    <tr>
+                        <th >Nazwa Towaru</th>
+                        <th data-sorter="false">Kod Towaru</th>
+                        <th data-sorter="false">Cena Netto</th>
+                        <th data-sorter="false">VAT</th>
+                        <th>Cena Brutto</th>
+                        <th data-sorter="false">Kategoria</th>
+                        <th data-sorter="false">Opcja Towaru</th>
+                        <th>Ocena Towaru</th>
+                        <th data-sorter="false">Usuń</th>
+                        <th data-sorter="false">Edytuj</th>
+                        <th data-sorter="false">Koszyk</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr >
+                            <td class="nameTowar">Sok</td>
+                            <td>22-11</td>
+                            <td>21.00</td>
+                            <td>3%</td>
+                            <td>21.63</td>
+                            <td>Opcja 1</td>
+                            <td>option 1 option 2</td>
+                            <td>option 2</td>
+                            <td><button class="btn btn-danger btn-sm btn-block" onclick="removeRow(this)">Usuń</button></td>
+                            <td><button class="btn btn-info btn-sm btn-block" onclick="editRow(this)">Edytuj</button></td>
+                            <td><button class="btn btn-primary btn-sm btn-block" data-toggle="popover" title="Do koszyka" data-content="Produkt dodano do koszyka" onclick="addToStorage(this)">Koszyk</button></td>
+                        </tr>
+                        <tr >
+                            <td class="nameTowar">Rok</td>
+                            <td>33-11</td>
+                            <td>21.00</td>
+                            <td>3%</td>
+                            <td>41.63</td>
+                            <td>Opcja 1</td>
+                            <td>option 1 option 2</td>
+                            <td>option 5</td>
+                            <td><button class="btn btn-danger btn-sm btn-block" onclick="removeRow(this)">Usuń</button></td>
+                            <td><button class="btn btn-info btn-sm btn-block"  onclick="editRow(this)">Edytuj</button></td>
+                            <td><button class="btn btn-primary btn-sm btn-block" data-toggle="popover" title="Do koszyka" data-content="Produkt dodano do koszyka" onclick="addToStorage(this)">Koszyk</button></td>
+
+                        </tr>
+                        <tr >
+                            <td class="nameTowar">Borsuk</td>
+                            <td>44-11</td>
+                            <td>21.00</td>
+                            <td>3%</td>
+                            <td>323.83</td>
+                            <td>Opcja 1</td>
+                            <td>option 3 option 4</td>
+                            <td>option 1</td>
+                            <td><button class="btn btn-danger btn-sm btn-block" onclick="removeRow(this)">Usuń</button></td>
+                            <td><button class="btn btn-info btn-sm btn-block"  onclick="editRow(this)">Edytuj</button></td>
+                            <td><button class="btn btn-primary btn-sm btn-block" data-toggle="popover" title="Do koszyka" data-content="Produkt dodano do koszyka" onclick="addToStorage(this)">Koszyk</button></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div class="col-md-2 ">
+                <div class="card bg-dark text-white p-1">
+                    <img class="card-img-top img-fluid" src="card.png" alt="Card image">
+                    <div class="card-body">
+                        <h5 class="card-title">Mateusz Widalski</h5>
+                        <p class="card-text">wizytówka</p>
+                        <a href="#" class="btn btn-primary">Profil</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <nav class="navbar fixed-bottom">
+            <h5>PDD</h5>
+        </nav>
+    </div>
+</div>
+
+<!--<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>

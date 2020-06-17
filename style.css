@@ -1,0 +1,38 @@
+body, html {
+    padding-top: 70px;
+    padding-bottom: 30px;
+}
+
+.navbar {
+    background-color: #002b80;
+    color: #2da6e3;
+}
+
+.main{
+    /*color: #2da6e3;*/
+    font-size: x-large;
+    margin-top: 3px;
+}
+
+.main:link, .main:visited{
+    text-align: center;
+    color: white;
+    text-decoration: none;
+}
+
+.info {
+    color: #2da6e3;
+    padding-left: 25px;
+    font-size: large;
+}
+
+td > input[type=number]{
+    border:none;
+    width: 100%;
+}
+
+#cenaZakupu{
+    width: 8rem;
+    height: 2rem;
+    font-size: 1rem;
+}
