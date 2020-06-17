@@ -371,13 +371,15 @@ function przyciskFormularz(){
                     radioString + "</td><td>" +
                     buttonUsun + "</td><td>" +
                     buttonEdytuj + "</td><td>" +
-                    buttonKoszyk + "</td><td>" +
-                    "</td></tr>",
+                    buttonKoszyk + "</td></tr>",
 
                     $row = $(row),
                     resort = true;
                 $('#myTable')
                     .find('tbody').append($row);
+
+                $('#myTable')
+                    .trigger("updateAll");
 
                 clearForm();
                 return false;
@@ -489,10 +491,19 @@ function addEditRow() {
         test.cells[1].innerHTML = document.getElementById("inputKodTowaru").value;
         test.cells[2].innerHTML = document.getElementById("inputCenaNetto").value;
         test.cells[3].innerHTML = document.getElementById("inputVat").value;
+        test.cells[4].innerHTML = document.getElementById("inputCenaBrutto").value;
         test.cells[5].innerHTML = document.getElementById("inputKategorie").value;
 
         test.cells[6].innerHTML = checkboxForm();
         test.cells[7].innerHTML = radioForm();
+
+        document.getElementById("myForm").reset();
+        let editBtn = document.getElementById("Edit");
+        editBtn.style.visibility = "hidden";
+
+        let addBtn = document.getElementById("Validate");
+        addBtn.style.visibility = "visible";
+
 
     }else{
         btn.innerText = "Niepoprawne dane";
